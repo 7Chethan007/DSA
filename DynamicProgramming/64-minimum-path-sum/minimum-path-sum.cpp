@@ -1,43 +1,38 @@
 class Solution {
 public:
-    // Function to calculate minimum path sum with memoization
-    int minPath(int i, int j,
-                vector<vector<int>> &grid,
-                vector<vector<int>> &dp) {
-        // If we are at (0,0), return that cell's value
-        if (i == 0 && j == 0)
-            return grid[0][0];
+    int minPathSum(vector<vector<int>> &matrix) {
+        int n = matrix.size();
+        int m = matrix[0].size();
 
-        // If out of bounds, return large number
-        if (i < 0 || j < 0)
-            return 1e9;
+        // Create DP table
+        vector<vector<int>> dp(n, vector<int>(m, 0));
 
-        // If already computed, return from dp
-        if (dp[i][j] != -1)
-            return dp[i][j];
+        // Fill the table
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
 
-        // Compute path by going up
-        int up = grid[i][j] +
-                 minPath(i - 1, j, grid, dp);
+                // First cell initialization
+                if (i == 0 && j == 0)
+                    dp[i][j] = matrix[i][j];
+                else {
+                    // Calculate from top
+                    int up = matrix[i][j];
+                    if (i > 0) up += dp[i - 1][j];
+                    else up += 1e9;
 
-        // Compute path by going left
-        int left = grid[i][j] +
-                   minPath(i, j - 1, grid, dp);
+                    // Calculate from left
+                    int left = matrix[i][j];
+                    if (j > 0) left += dp[i][j - 1];
+                    else left += 1e9;
 
-        // Store the minimum in dp and return
-        return dp[i][j] = min(up, left);
+                    // Take minimum
+                    dp[i][j] = min(up, left);
+                }
+            }
+        }
+
+        // Return result
+        return dp[n - 1][m - 1];
     }
 
-    // Main function that initializes dp and calls helper
-    int minPathSum(vector<vector<int>> &grid) {
-        int n = grid.size();
-        int m = grid[0].size();
-
-        // Create dp table initialized with -1
-        vector<vector<int>> dp(n,
-                vector<int>(m, -1));
-
-        // Start from bottom-right corner
-        return minPath(n - 1, m - 1, grid, dp);
-    }
 };
