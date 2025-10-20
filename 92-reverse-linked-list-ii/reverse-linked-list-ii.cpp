@@ -15,48 +15,53 @@ public:
             return head;
         }
 
-        // 1. Create a dummy node to handle the case where the reversal starts at the head (left=1).
+        // 1. Setup Dummy Node
         ListNode dummy(0);
         dummy.next = head;
         
-        // 'prev_left_node' will point to the node JUST BEFORE the 'left' position.
-        // It remains fixed throughout the reversal.
-        ListNode* prev_left_node = &dummy; 
+        // Find the node BEFORE the reversal starts (L-1 position).
+        // We use leftPrev to anchor the entire segment.
+        ListNode* leftPrev = &dummy; 
         for (int i = 0; i < left - 1; ++i) {
-            prev_left_node = prev_left_node->next;
+            leftPrev = leftPrev->next;
         }
 
-        // 'current_left_node' will be the first node of the segment to be reversed.
-        // It remains fixed as the 'tail' of the reversed segment.
-        ListNode* current_left_node = prev_left_node->next;
+        // 'current_left_node' is the first node of the segment (the fixed tail after reversal).
+        ListNode* current_left_node = leftPrev->next;
+        
+        // Pointers for the iterative reversal within the segment
+        ListNode* prev = nullptr; // Initialize previous node for the reversal
+        ListNode* curr = current_left_node; // Start at the left node
+        
+        // We will stop when we reach the node *after* the right position
+        int count = right - left + 1;
 
-        // 2. Iteratively reverse the segment from 'left' to 'right'.
-        // We need (right - left) reversal steps.
-        ListNode* prev = current_left_node;
-        ListNode* current = current_left_node->next; 
-
-        for (int i = 0; i < right - left; ++i) {
-            ListNode* next_node = current->next;
+        // 2. Perform the reversal on the sub-segment [left, right]
+        for (int i = 0; i < count; ++i) {
+            ListNode* next_node = curr->next;
             
-            // Reversal: Reverse the direction of 'current' node's pointer.
-            current->next = prev; 
+            // Reversal: Reverse the pointer
+            curr->next = prev; 
             
-            // Move pointers one step forward
-            prev = current; 
-            current = next_node;
+            // Advance pointers
+            prev = curr; 
+            curr = next_node;
         }
 
-        // 3. Reconnect the reversed segment to the rest of the list.
+        // At this point:
+        // 'leftPrev' points to the node before L.
+        // 'prev' points to the original R node (the new head).
+        // 'current_left_node' points to the original L node (the new tail).
+        // 'curr' points to the node after R.
 
-        // 'prev' is now the new head of the reversed segment (the original 'right' node).
-        // Connect the node before the segment to the new head.
-        prev_left_node->next = prev;
+        // 3. Reconnect the boundaries
 
-        // 'current_left_node' is now the tail of the reversed segment (the original 'left' node).
-        // Connect the new tail to the node immediately following the 'right' position (which is 'current').
-        current_left_node->next = current;
+        // a. Connect the new tail (original L node) to the segment after R (curr)
+        current_left_node->next = curr;
 
-        // 4. Return the head of the modified list (which is dummy.next).
+        // b. Connect the anchor node (before L) to the new head (original R node, prev)
+        leftPrev->next = prev;
+
         return dummy.next;
     }
 };
