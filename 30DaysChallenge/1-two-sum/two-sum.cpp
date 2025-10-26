@@ -3,7 +3,7 @@ public:
     vector<int> twoSum(vector<int>& nums, int target) {
         int n = nums.size();
         vector<pair<int,int>> a;
-        a.reserve(n);
+        // a.reserve(n);
         for (int i = 0; i < n; ++i) a.emplace_back(nums[i], i);
 
         sort(a.begin(), a.end()); // sorts by value, but each pair keeps original index
