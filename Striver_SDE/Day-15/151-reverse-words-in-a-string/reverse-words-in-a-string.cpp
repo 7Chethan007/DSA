@@ -1,41 +1,40 @@
+#include <algorithm>
+#include <string>
+
+using namespace std;
+
 class Solution {
 public:
     string reverseWords(string s) {
-        int left = 0, right = s.length() - 1;
+        // reverse the whole string
+        reverse(s.begin(), s.end());
 
-        // Step 1: Trim leading and trailing spaces
-        while (left <= right && s[left] == ' ') left++;
-        while (right >= left && s[right] == ' ') right--;
+        int n = s.size();
+        int i = 0;        // write index
+        int l = 0;        // read index
 
-        string word = "";
-        vector<string> words;
+        while (l < n) {
+            // skip any spaces
+            while (l < n && s[l] == ' ') ++l;
+            if (l >= n) break;
 
-        // Step 2: Extract words
-        while (left <= right) {
-            char ch = s[left];
-            if (ch != ' ') {
-                word += ch;
-            } else if (ch == ' ' && !word.empty()) {
-                words.push_back(word);
-                word = "";
-            }
-            left++;
-        }
-        // Add the last word
-        if (!word.empty())
-            words.push_back(word);
+            // add a single space between words if this isn't the first word
+            if (i != 0) s[i++] = ' ';
 
-        // Step 3: Reverse order of words
-        reverse(words.begin(), words.end());
+            // copy the next word to position i
+            int r = l;
+            while (r < n && s[r] != ' ')
+                s[i++] = s[r++];
 
-        // Step 4: Join words with a single space
-        string result = "";
-        for (int i = 0; i < words.size(); i++) {
-            result += words[i];
-            if (i != words.size() - 1)
-                result += " ";
+            // reverse that word in-place
+            reverse(s.begin() + (i - (r - l)), s.begin() + i);
+
+            // move l to r (next position to read)
+            l = r;
         }
 
-        return result;
+        // erase the leftover characters after the last write position
+        s.erase(s.begin() + i, s.end());
+        return s;
     }
 };
