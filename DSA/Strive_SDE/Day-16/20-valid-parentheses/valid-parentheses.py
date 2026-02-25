@@ -9,7 +9,7 @@ class Solution:
             else:
                 # No opening bracket to match
                 # Checks whether the stack is empty before trying to remove (pop) an element from it.
-                if not stack:
+                if len(stack) == 0:
                     return False
                 
                 top = stack.pop()
